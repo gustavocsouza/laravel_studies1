@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\OnlyAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/','home');
@@ -26,3 +28,48 @@ Route::get('exp3/{value}/{value2}', function($value, $value2) {
     'value' => '[A-Za-z[0-9]+',
     'value2' => '[0-9]+',
 ]);
+
+// Route names
+Route::get('/route_abc', function(){
+    echo "Route with name";
+})->name('route');
+
+Route::get('/route_redirect', function() {
+    return redirect()->route('route');
+});
+
+// Route groups
+Route::prefix('admin')->group(function() {
+    Route::get('/home', function() {
+        echo "admin home";
+    });
+    Route::get('/about', function() {
+        echo "admin about";
+    });
+});
+
+// Route middlewares
+Route::get('admin/only', function() {
+    echo "Admin";
+})->middleware([OnlyAdmin::class]);
+
+Route::middleware([OnlyAdmin::class])->group(function() {
+    Route::get('/home', function() {
+        echo "admin home";
+    });
+    Route::get('/about', function() {
+        echo "admin about";
+    });
+});
+
+// Controller routes
+Route::controller(UserController::class)->group(function() {
+    Route::get('/user/new', 'new');
+    Route::get('/user/edit', 'edit');
+    Route::get('/user/delete', 'delete');
+});
+
+// fallback
+Route::fallback(function() {
+    echo "fallback not found 404";
+});
