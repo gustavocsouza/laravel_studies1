@@ -1,6 +1,16 @@
 <?php
 
 use App\Http\Controllers\MainController;
+use App\Http\Middleware\EndMiddleware;
+use App\Http\Middleware\StartMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/teste/{value}', [MainController::class, 'teste'])->name('teste');
+// Route::get('/', [MainController::class, 'index'])->name('index')->middleware([StartMiddleware::class]);
+// Route::get('/about', [MainController::class, 'about'])->name('about')->middleware([StartMiddleware::class, EndMiddleware::class]);
+// Route::get('/contact', [MainController::class, 'contact'])->name('contact');
+
+Route::middleware([StartMiddleware::class])->group(function() {
+    Route::get('/', [MainController::class, 'index'])->name('index');
+    Route::get('/about', [MainController::class, 'about'])->name('about')->withoutMiddleware([StartMiddleware::class]);
+    Route::get('/contact', [MainController::class, 'contact'])->name('contact');
+});
